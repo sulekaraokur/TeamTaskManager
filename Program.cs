@@ -4,7 +4,9 @@ using Scalar.AspNetCore;
 using TeamTaskManager.API.Interfaces;
 using TeamTaskManager.API.Repositories;
 using TeamTaskManager.API.Services; //Scalar API'lerini ASP.NET Core uygulamanıza entegre etmek için gerekli olan using ifadesi. Bu, Scalar API özelliklerini kullanarak API referanslarını oluşturmanıza ve sunmanıza olanak tanır.
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args); //uygulamanın temelni oluşturuluyor ,  ayarları yapılandırmak için kullanılır.
 
@@ -27,6 +29,34 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+// Proje ekibini sisteme tanıtıyoruz
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
+
+
+//dijital anahtar oluşturmak
+
+//Güvenlik Kontrolü:sisteme JWT kullanılacağını söylüyoruz
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true, // Anahtarı biz mi ürettik? (Kontrol et)
+            ValidateAudience = true, // Anahtar bizim kullanıcılarımız için mi? (Kontrol et)
+            ValidateLifetime = true, // Anahtarın süresi dolmuş mu? (Kontrol et)
+            ValidateIssuerSigningKey = true, // İmza bizim gizli şifremizle mi atılmış? (Kontrol et)
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
+
+    // 2. YETKİLENDİRME: Kimlik doğrulandıktan sonra yetkisi var mı diye bakacak sistem
+    builder.Services.AddAuthorization();
+
+
 
 
 var app = builder.Build();
@@ -40,6 +70,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication(); // Kimlik Kontrolü (Sen kimsin?)
+app.UseAuthorization();  // Yetki Kontrolü (Buraya girmeye iznin var mı?)
+
 
 app.MapControllers();
 

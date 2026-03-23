@@ -7,13 +7,15 @@ public class AuthService : IAuthService
 {
     
     private readonly IUserRepository _userRepository;
-
+    private readonly ITokenService _tokenService; // Yeni anahtarcımız eklendi
     //Dependecy Injection:
     //Veritabanı işçimizi(Repository) buraya çağırıyoruz
+    //Şef artık hem yamağı hem de anahtarcıyı çağırıyor
 
-    public AuthService(IUserRepository userRepository)
+    public AuthService(IUserRepository userRepository,ITokenService tokenService)
     {
         _userRepository = userRepository;
+        _tokenService = tokenService;
     }
 
     public async Task<User> RegisterAsync(string username, string email, string password)
@@ -60,7 +62,8 @@ public class AuthService : IAuthService
         //(bir sonraki adımda buraya) JWT token ekleyeceğiz.
 
         
-        return "Giriş Başarılı! (Gerçek Token buraya gelecek.)"; // Bu kısmı gerçek JWT token ile değiştireceğiz.
+        return _tokenService.CreateToken(user); 
+        //Giriş başarılıysa, kullanıcı bilgilerini içeren bir JWT token oluşturup döndürür.
     }
 }
 

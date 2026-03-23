@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamTaskManager.API.Interfaces;
 
@@ -57,6 +58,16 @@ public class AuthController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+    
+// [Authorize] etiketi, bu kapıya bir güvenlik görevlisi diker.
+// Anahtarı (Token) olmayan veya sahte anahtarı olan hiç kimse bu metoda ulaşamaz.
+[Authorize]
+[HttpGet("vip-oda")]
+public IActionResult GetSecretVipRoom()
+{
+    return Ok(new { Message = "VIP Odaya Hoş Geldiniz! Kimlik doğrulamasını başarıyla geçtiniz." });
+}
+
 }
 
 //DTO: Data Transfer Object
