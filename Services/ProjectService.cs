@@ -44,3 +44,10 @@ public class ProjectService : IProjectService
          
     }   
 }
+
+//dikkat edersen şef(service) projenin adının boş olup olmadığını
+//kontrol etti ve oluşturulma tarihini otomatik adadı.
+//Yamak(repository) bunları düşünmezdi. İşte görev ayrımı budur
+
+
+//sırada merkeze(program.cs) yeni ekibi tanıtmalıyız.

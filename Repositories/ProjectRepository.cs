@@ -31,3 +31,7 @@ public class ProjectRepository : IProjectRepository
     }
 
 }
+
+//veritabanı kodları(entity framework) sadece bu dosyanın içinde
+//kalsın istiyoruz.Diğer katmanlar verilerin nasıl
+//kaydedildiğini bilmek zorunda kalmasın.
