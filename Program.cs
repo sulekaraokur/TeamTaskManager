@@ -33,7 +33,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 // Proje ekibini sisteme tanıtıyoruz
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
-
+// Görevler (Tasks) için Aşçı ve Şefin sisteme kaydedilmesi
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 //dijital anahtar oluşturmak
 

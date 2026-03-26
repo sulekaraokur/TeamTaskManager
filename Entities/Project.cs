@@ -12,6 +12,5 @@ public class Project
 
     //Eğitim notu: bir projenin içinde birden fazla görev olabilir,
     //1-N ilişkisidir
-
     public ICollection<TaskItem> Tasks { get; set; } = new List<TaskItem>(); //Projenin içinde birden fazla görevi temsil eder. Bu, projenin görevlerini tutmak için kullanılan bir koleksiyondur ve her görev, Task sınıfında tanımlanan özelliklere sahip olabilir.
 }

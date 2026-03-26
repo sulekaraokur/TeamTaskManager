@@ -5,7 +5,7 @@ public class TaskItem
     public int Id { get; set; } //Görev öğesinin benzersiz kimliğini temsil eder. Bu, veritabanında her görev için otomatik olarak artan birincil anahtar olarak kullanılabilir.
     public string Title { get; set; } = string.Empty; //Görevin başlığını temsil eder. Bu, görevin tanımlayıcı bir özelliğidir ve genellikle kullanıcı tarafından sağlanır.
     public string Description { get; set; } = string.Empty; //Görevin açıklamasını temsil eder. Bu, görevin amacını veya içeriğini açıklamak için kullanılabilir.
-    public string Status { get; set; } = "Todo"; //Görevin tamamlanıp tamamlanmadığını temsil eder. Bu, görevin durumunu belirtmek için kullanılan bir boolean değerdir.
+    public bool IsCompleted { get; set; } = false; //Görevin tamamlanıp tamamlanmadığını temsil eder. Bu, görevin durumunu belirtmek için kullanılan bir boolean değerdir.
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow; //Görevin oluşturulma tarihini temsil eder. Bu, görevin ne zaman oluşturulduğunu belirtmek için kullanılan bir DateTime değeridir.
 
     //Eğitim notu: Bir görev yalnızca bir projeye ait olabilir,
