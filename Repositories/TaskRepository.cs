@@ -30,5 +30,31 @@ public class TaskRepository : ITaskRepository
         await _context.SaveChangesAsync(); //Değişiklikleri veritabanına kaydetme işlemi
         return taskItem; //Eklenen görevi geri döndürme
     }
+
+    public async Task<TaskItem?> GetTaskByIdAsync(int id)
+    {
+        //FindAsync, veritabanında sadece ID'ye(primary key) göre 
+        // en hızlı arama yapan metottur
+
+        return await _context.TaskItems.FindAsync(id);  
+    }
+
+    public async Task UpdateTaskAsync(TaskItem taskItem)
+    {
+        //görevi güncellemeye hazırla ve değişiklikleri kaydet
+        _context.TaskItems.Update(taskItem);
+        await _context.SaveChangesAsync();
+    }
+
+
+    public async Task DeleteTaskAsync(TaskItem taskItem)
+    {
+        //1.Görevi silinmek üzere işaretle
+        _context.TaskItems.Remove(taskItem);
+
+        //2.Değişikliği(silme işlemini) veritabanına kalıcı olarak kaydet
+        await _context.SaveChangesAsync();
+    }
+    
     
 }

@@ -9,6 +9,14 @@ public interface ITaskRepository
     Task<IEnumerable<TaskItem>> GetTaskByProjectIdAsync(int projectId); //Veritabanındaki belirli bir projeye ait tüm görevleri liste haline getirme kuralı
    //Yeni bir görev(TaskItem) ver, bunu sisteme ekleyip sana döndürür.
     Task<TaskItem> AddTaskAsync(TaskItem taskItem); //Veritabanına yeni bir görev ekleme kuralı
+
+    //Güncellencek veya silinecek görevi veritabanında bulmak için
+    Task<TaskItem?> GetTaskByIdAsync(int id);
+
+    //Bulunan görevi yeni bilgileriyle veritabanına kaydetmek için
+    Task UpdateTaskAsync(TaskItem taskItem);
+
+    Task DeleteTaskAsync(TaskItem taskItem);
 }
  
  //İşçimizin(repository) hangi yeteneklere sahip olması
