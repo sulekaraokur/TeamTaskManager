@@ -7,6 +7,7 @@ using TeamTaskManager.API.Services; //Scalar API'lerini ASP.NET Core uygulamanı
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args); //uygulamanın temelni oluşturuluyor ,  ayarları yapılandırmak için kullanılır.
 
@@ -25,7 +26,11 @@ builder.Services.AddOpenApi(); //  OpenAPI belgelerini oluşturmak için gerekli
 //Senden IUserRepository sözleşmesi istediğinde, ona 
 //arka planda UserRepository sınıfından yeni bir nesne verecektir.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    // JSON'a çevirirken sonsuz döngüleri (Object Cycle) görmezden gel
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -36,6 +41,12 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 // Görevler (Tasks) için Aşçı ve Şefin sisteme kaydedilmesi
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+//yorum comment modülü için bağımlılıkların(dependency injection) eklenmes
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+//comment controller çalışmaya başladığında sistemden ICommentService isteyecek
+//Biz bu kodla sisteme biri senden ICommentService isterse ona
+//arka planda CommentService sınıfını ver
 
 //dijital anahtar oluşturmak
 

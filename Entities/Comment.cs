@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace TeamTaskManager.API.Entities;
 
 public class Comment
 {
     public int Id { get; set; } //Yorumun benzersiz kimliğini temsil eder. Bu, veritabanında her yorum için otomatik olarak artan birincil anahtar olarak kullanılabilir.
+   
+    [Required] //should be filled. 
     public string Content { get; set; } = string.Empty; //Yorumun içeriğini temsil eder. Bu, yorumun metin içeriğini tutmak için kullanılan bir özelliktir ve genellikle kullanıcı tarafından sağlanır.
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow; //Yorumun oluşturulma tarihini temsil eder. Bu, yorumun ne zaman oluşturulduğunu belirtmek için kullanılan bir DateTime değeridir.
 
