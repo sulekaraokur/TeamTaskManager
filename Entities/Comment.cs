@@ -18,4 +18,4 @@ public class Comment
     public int UserId { get; set; } //Bu, yorumun hangi kullanıcı tarafından yapıldığını belirtmek için kullanılan bir yabancı anahtar (foreign key) özelliğidir. Bu özellik, Comment sınıfının User sınıfıyla ilişkili olduğunu gösterir ve veritabanında bu ilişkiyi kurmak için kullanılır. Bu sayede, bir yorum üzerinden hangi kullanıcı tarafından yapıldığını kolayca erişilebilir.
     public User? User { get; set; } //Bu, yorumun hangi kullanıcı tarafından yapıldığını temsil eden bir navigasyon özelliğidir. Bu özellik, Comment sınıfının User sınıfıyla ilişkili olduğunu gösterir ve veritabanında bu ilişkiyi kurmak için kullanılır. Bu sayede, bir yorum üzerinden hangi kullanıcı tarafından yapıldığını kolayca erişilebilir.
 
-}
+} 

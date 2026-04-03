@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TeamTaskMaager.API.DTOs;
 using TeamTaskManager.API.DTOs;
 using TeamTaskManager.API.Interfaces;
 
@@ -26,7 +27,7 @@ public class TaskController : ControllerBase
     public async Task<IActionResult> CreateTask([FromBody] CreateTaskRequest request)
     {
         //Garson sipariş fişindeki(DTO) bilgileri alıp şefe(service) veriyor
-        var newTask = await _taskService.CreateTaskAsync(request.ProjectId , request.Title , request.Description);
+        var newTask = await _taskService.CreateTaskAsync(request);
 
         //Şefin hazırladığğı yeni görevi müşteriye(ekrana endpoinst) sunuyor.
         return Ok(newTask);
@@ -37,9 +38,9 @@ public class TaskController : ControllerBase
     //URL örneği : GET /api/Task/project/5 (5 numaralı projenin görevleri)
 
     [HttpGet("project/{projectId}")]
-    public async Task<IActionResult> GetTasksByProjectId(int projectId)
+    public async Task<IActionResult> GetTasksByProjectId([FromRoute] int projectId, [FromQuery] PaginationFilter filter)
     {
-        var tasks = await _taskService.GetTasksByProjectIdAsync(projectId);
+        var tasks = await _taskService.GetTasksByProjectIdAsync(projectId,filter);
         return Ok(tasks);
     }
 

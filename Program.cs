@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using System.Reflection;
+using TeamTaskManager.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args); //uygulamanın temelni oluşturuluyor ,  ayarları yapılandırmak için kullanılır.
 
@@ -32,6 +36,17 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
+//AddFluentValidationAutoValidation(): Garsonun(controller) gelen isteği
+//otomatik olarak bu kurallardan geçirmesini sağlar
+
+//AddValidatorsFromAssembly: sisteme"git ve projenin içindeki tüm validator
+//sınıflarını tara bul ve kullanıma hazırla" der.
+//Tek tek her validator'ı kaydetme zahmetinden kurtarır. 
+
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<TeamTaskManager.API.Mappings.MappingProfile>());
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -87,6 +102,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication(); // Kimlik Kontrolü (Sen kimsin?)
 app.UseAuthorization();  // Yetki Kontrolü (Buraya girmeye iznin var mı?)
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();//should be upper of mapcontrollers.
 
 app.MapControllers();
 

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TeamTaskMaager.API.DTOs;
 using TeamTaskManager.API.Data;
 using TeamTaskManager.API.Entities;
 using TeamTaskManager.API.Interfaces;
@@ -18,10 +19,15 @@ public class TaskRepository : ITaskRepository
 
     }
 
-    public async Task<IEnumerable<TaskItem>> GetTaskByProjectIdAsync(int projectId)
+    public async Task<IEnumerable<TaskItem>> GetTaskByProjectIdAsync(int projectId,PaginationFilter filter)
     {
-        return await _context.TaskItems.Where(t => t.ProjectId == projectId).ToListAsync(); 
-        //Veritabanındaki belirli bir projeye ait tüm görevleri liste haline getirme kuralı
+       return await _context.TaskItems
+            .Where(t => t.ProjectId == projectId)
+            // Sayfalama Formülü: (Sayfa No - 1) * Sayfa Boyutu kadar kaydı ATLA (Skip)
+            .Skip((filter.PageNumber - 1) * filter.PageSize)
+            // Kalanların içinden Sayfa Boyutu kadarını AL (Take)
+            .Take(filter.PageSize)
+            .ToListAsync();
     }
 
     public async Task<TaskItem> AddTaskAsync(TaskItem taskItem)
@@ -50,6 +56,8 @@ public class TaskRepository : ITaskRepository
     public async Task DeleteTaskAsync(TaskItem taskItem)
     {
         //1.Görevi silinmek üzere işaretle
+        //Burda yazdığımız TaskItems tabloyu temsil ediyor taskItem ise 
+        //belirlediğimiz taskı temsil ediyor.
         _context.TaskItems.Remove(taskItem);
 
         //2.Değişikliği(silme işlemini) veritabanına kalıcı olarak kaydet

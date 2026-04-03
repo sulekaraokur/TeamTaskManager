@@ -1,4 +1,6 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using TeamTaskMaager.API.DTOs;
 using TeamTaskManager.API.DTOs;
 using TeamTaskManager.API.Entities;
 using TeamTaskManager.API.Interfaces;
@@ -8,46 +10,38 @@ namespace TeamTaskManager.API.Services;
 public class TaskService : ITaskService
 {
     private readonly ITaskRepository _taskRepository;
+
+    private readonly IMapper _mapper; // Fotokopi makinemiz
     
     //Şef, veritabanı işlemlerini kendisi yapmaz
     //Mutfaktaki aşçıyı(repository) yanına çağırır
 
-    public TaskService(ITaskRepository taskRepository)
+    public TaskService(ITaskRepository taskRepository, IMapper mapper)
     {
         _taskRepository = taskRepository;
+        _mapper = mapper;
     }
 
-    public async Task<IEnumerable<TaskItem>> GetTasksByProjectIdAsync(int projectId)
+    public async Task<IEnumerable<TaskItem>> GetTasksByProjectIdAsync(int projectId, PaginationFilter filter)
     {
         //Şef, "Bana bu projenin görevlerini getir" diyerek
         //işi doğrudan aşçıya(repository) paslıyor.
-        return await _taskRepository.GetTaskByProjectIdAsync(projectId); 
+        return await _taskRepository.GetTaskByProjectIdAsync(projectId,filter); 
     }
 
-    public async Task<TaskItem> CreateTaskAsync(int projectId, string title, string description)
+    public async Task<TaskItem> CreateTaskAsync(CreateTaskRequest request)
     {
-        //İŞ KURALLARI BURADA İŞLETİLİR:
-        //Dışardan sadece proje ID, başlık ve açıklama geldi
-        //Ama veritabanının "Oluşturulma tarihi" ve "Tamamlandı mı?"
-        //bilgilerine de ihtiyacı var.
-        //Şef, bu eksik malzemeleri kendi ekleyip tabağı (TaskItem) hazırlıyor.
+      //eski uzun kodlar yerine:
+     //DTO içinden request al , otomatik olarak bir göreve(TaskITem) dönüştür
+     var newTask = _mapper.Map<TaskItem>(request);
 
-        var newTask = new TaskItem
-        {
-            ProjectId = projectId,
-            Title = title,
-            Description = description,
-            // Görevin oluşturulduğu anı sistem saatiyle belirliyoruz
-            CreatedAt = DateTime.UtcNow, 
-            // Yeni görev doğal olarak henüz tamamlanmamıştır
-            IsCompleted = false
-        };
+     //Tarih gibi DTO'da olmayan,bizim belirlediğimiz otomatik alanları
+     //elle ekleyebiliriz.
+        newTask.CreatedAt = DateTime.UtcNow;
 
-        //Şef, hazırladığı tam teşekküllü tabağı (TaskItem)
-        //fırına vermesi(veritabanına kaydetmesi) için 
-        //açşıya iletiyor.
-
-        return await _taskRepository.AddTaskAsync(newTask);
+        await _taskRepository.AddTaskAsync(newTask);
+        return newTask;
+        
     }
 
     public async Task<TaskItem?> UpdateTaskAsync(int id , UpdateTaskRequest request)
