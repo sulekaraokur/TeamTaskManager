@@ -51,4 +51,14 @@ public class ProjectController : ControllerBase
         return Ok(projects);
     }
 
+    //3.DELETE: Proje silme uç noktası
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProject(int id)
+    {
+        await _projectService.DeleteProjectAsync(id);
+        return Ok(new { message = "Proje başarıyla silindi." });
+    }
+
+    
+
 }

@@ -43,6 +43,15 @@ public class ProjectService : IProjectService
         return await _projectRepository.AddProjectAsync(newProject);
          
     }   
+
+
+public async Task DeleteProjectAsync(int id)
+{
+    await _projectRepository.DeleteProjectAsync(id);
+}
+    
+
+    
 }
 
 //dikkat edersen şef(service) projenin adının boş olup olmadığını

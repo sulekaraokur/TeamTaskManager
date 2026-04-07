@@ -8,4 +8,6 @@ public interface IProjectService
     Task<IEnumerable<Project>> GetAllAsync();
     //Kullanıcıdan sadece projenin adını ve açıklamasını alacağız
     Task<Project> CreateProjectAsync(string name, string description);
+
+    Task DeleteProjectAsync(int id);
 }

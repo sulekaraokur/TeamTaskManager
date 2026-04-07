@@ -6,61 +6,57 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <h1 class="display-5">Hoş Geldin!</h1>
+            <h1 class="display-5 fw-bold">Hoş Geldin!</h1>
             <p class="text-muted">Ekibinin projelerini ve görevlerini buradan takip edebilirsin.</p>
         </div>
-        <div>
-            <button class="btn btn-primary" onclick="window.location.reload()">Verileri Yenile</button>
+        <div class="d-flex gap-2">
+            <a href="/Projects/Create" class="btn btn-success shadow-sm">＋ Yeni Proje</a>
+            <button class="btn btn-outline-primary" onclick="window.location.reload()">Yenile</button>
         </div>
     </div>
 
     <div class="row mt-4">
         <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card bg-primary text-white shadow">
+            <div class="card bg-primary text-white shadow border-0">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="text-uppercase">Toplam Proje</h6>
+                            <h6 class="text-uppercase small">Toplam Proje</h6>
                             <h2 id="projectCount" class="mb-0">...</h2>
                         </div>
-                        <div class="align-self-center">
-                            <i class="bi bi-folder-fill fs-1"></i>
-                        </div>
+                        <i class="bi bi-folder-fill fs-1 opacity-50"></i>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card bg-success text-white shadow">
+            <div class="card bg-success text-white shadow border-0">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="text-uppercase">Tamamlanan Görevler</h6>
-                            <h2 id="completedTaskCount" class="mb-0">0</h2>
+                            <h6 class="text-uppercase small">Aktif Görevler</h6>
+                            <h2 id="totalTaskCount" class="mb-0">0</h2>
                         </div>
-                        <div class="align-self-center">
-                            <i class="bi bi-check-circle-fill fs-1"></i>
-                        </div>
+                        <i class="bi bi-check-circle-fill fs-1 opacity-50"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card mt-2 shadow-sm">
-        <div class="card-header bg-white">
-            <h5 class="mb-0">Aktif Projeler</h5>
+    <div class="card mt-2 shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">Aktif Projeler ve İçerik</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Proje Adı</th>
-                            <th>Açıklama</th>
-                            <th>Oluşturulma</th>
-                            <th class="text-end">İşlem</th>
+                            <th style="width: 25%">Proje Adı</th>
+                            <th style="width: 45%">Görevler</th>
+                            <th style="width: 15%">Oluşturulma</th>
+                            <th style="width: 15%" class="text-end">İşlemler</th>
                         </tr>
                     </thead>
                     <tbody id="projectTableBody">
@@ -75,20 +71,15 @@
 </div>
 
 <script>
-    // 1. Güvenlik Kontrolü: Token yoksa direkt Login'e at
     const token = localStorage.getItem('token');
-    if (!token) {
-        window.location.href = '/';
-    }
+    if (!token) { window.location.href = '/'; }
 
-    // 2. Sayfa Yüklendiğinde Verileri Getir
     document.addEventListener('DOMContentLoaded', () => {
         loadDashboardData();
     });
 
     async function loadDashboardData() {
         try {
-            // Render üzerindeki API'ne istek atıyoruz
             const response = await fetch('https://teamtaskmanager-6vtq.onrender.com/api/Project', {
                 method: 'GET',
                 headers: {
@@ -98,44 +89,89 @@
             });
 
             if (response.ok) {
-                const projects = await response.json();
+                const data = await response.json();
+                console.log("Gelen Veri:", data);
+
+                // API'den gelen verinin liste olduğundan emin olalım ($values kontrolü)
+                const projects = Array.isArray(data) ? data : (data.$values || []);
                 
-                // Sayıları Güncelle
                 document.getElementById('projectCount').innerText = projects.length;
-                
-                // Tabloyu Doldur
                 const tableBody = document.getElementById('projectTableBody');
-                tableBody.innerHTML = ''; // "Yükleniyor" yazısını sil
+                tableBody.innerHTML = '';
 
                 if (projects.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4">Henüz bir proje oluşturulmamış.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4">Henüz proje yok.</td></tr>';
                     return;
                 }
 
+                let totalTasks = 0;
                 projects.forEach(p => {
-                    const date = new Date(p.createdAt).toLocaleDateString('tr-TR');
+                    const date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('tr-TR') : '-';
+                    const tasks = Array.isArray(p.tasks) ? p.tasks : (p.tasks?.$values || []);
+                    totalTasks += tasks.length;
+
+                    let tasksHtml = '<div class="d-flex flex-wrap gap-1">';
+                    tasks.forEach(t => {
+                        tasksHtml += `<span class="badge bg-light text-dark border small">${t.title}</span>`;
+                    });
+                    if (tasks.length === 0) tasksHtml += '<span class="text-muted small">Görev yok</span>';
+                    tasksHtml += '</div>';
+
+                    // DİKKAT: Burada klavyedeki "Alt Gr + ," tuşuyla yapılan backtick (`) kullanıyoruz
                     tableBody.innerHTML += `
                         <tr>
-                            <td class="fw-bold">${p.name}</td>
-                            <td>${p.description || '-'}</td>
-                            <td>${date}</td>
-                            <td class="text-end">
-                                <button class="btn btn-sm btn-outline-primary" onclick="alert('Görev detayları yakında eklenecek!')">
-                                    Detay
-                                </button>
+                            <td>
+                                <div class="fw-bold text-primary">${p.name || p.title}</div>
+                                <div class="text-muted small">${p.description || ''}</div>
                             </td>
-                        </tr>
-                    `;
+                            <td>${tasksHtml}</td>
+                            <td><span class="small text-muted">${date}</span></td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <a href="/Tasks/Create?projectId=${p.id}" class="btn btn-sm btn-outline-success">＋ Görev</a>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteProject(${p.id})">Sil</button>
+                                </div>
+                            </td>
+                        </tr>`;
                 });
+                document.getElementById('totalTaskCount').innerText = totalTasks;
+
             } else if (response.status === 401) {
-                alert('Oturum süresi dolmuş. Lütfen tekrar giriş yapın.');
-                localStorage.removeItem('token');
                 window.location.href = '/';
             }
         } catch (error) {
             console.error('Hata:', error);
-            document.getElementById('projectTableBody').innerHTML = 
-                '<tr><td colspan="4" class="text-center text-danger py-4">Veriler sunucudan çekilemedi!</td></tr>';
+            document.getElementById('projectTableBody').innerHTML = '<tr><td colspan="4" class="text-center text-danger">Yükleme hatası!</td></tr>';
         }
     }
+async function deleteProject(id) {
+    if(!confirm('Bu projeyi silmek istediğinize emin misiniz?')) return;
+    
+    const currentToken = localStorage.getItem('token');
+
+    try {
+        // ÜÇÜNCÜ VE SON İHTİMAL: ID'yi Body içinde gönderiyoruz
+        const res = await fetch(`https://teamtaskmanager-6vtq.onrender.com/api/Project`, {
+            method: 'DELETE',
+            headers: { 
+                'Authorization': `Bearer ${currentToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(id) // ID'yi direkt sayı olarak pakete koyduk
+        });
+
+        if (res.ok) {
+            alert('Proje başarıyla silindi.');
+            loadDashboardData();
+        } else {
+            // Eğer hala hata veriyorsa detayı görelim
+            const errorMsg = await res.text();
+            console.error("Silme Hatası Detayı:", errorMsg);
+            alert('Silme işlemi başarısız oldu. Konsoldaki hataya bakabilirsin.');
+        }
+    } catch (err) {
+        console.error('Bağlantı Hatası:', err);
+        alert('Sunucuya bağlanılamadı.');
+    }
+}
 </script>

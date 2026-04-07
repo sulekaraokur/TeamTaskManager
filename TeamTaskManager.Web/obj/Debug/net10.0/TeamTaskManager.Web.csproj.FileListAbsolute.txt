@@ -95,3 +95,4 @@ C:\Users\sulek\OneDrive\Desktop\TeamTaskManager\TeamTaskManager.Web\obj\Debug\ne
 C:\Users\sulek\OneDrive\Desktop\TeamTaskManager\TeamTaskManager.Web\obj\Debug\net10.0\TeamTaskManager.Web.pdb
 C:\Users\sulek\OneDrive\Desktop\TeamTaskManager\TeamTaskManager.Web\obj\Debug\net10.0\TeamTaskManager.Web.genruntimeconfig.cache
 C:\Users\sulek\OneDrive\Desktop\TeamTaskManager\TeamTaskManager.Web\obj\Debug\net10.0\ref\TeamTaskManager.Web.dll
+C:\Users\sulek\OneDrive\Desktop\TeamTaskManager\TeamTaskManager.Web\obj\Debug\net10.0\TeamTaskManager.Web.sourcelink.json

@@ -1,0 +1,50 @@
+@page
+@model TeamTaskManager.Web.Pages.Tasks.CreateModel
+@{
+    ViewData["Title"] = "Yeni Görev Ekle";
+}
+
+<div class="container mt-4">
+    <h2>Yeni Görev Ekle</h2>
+    <form id="createTaskForm">
+        <div class="mb-3">
+            <label for="title" class="form-label">Başlık</label>
+            <input type="text" class="form-control" id="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Açıklama</label>
+            <textarea class="form-control" id="description" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="projectId" class="form-label">Proje ID</label>
+            <input type="number" class="form-control" id="projectId" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('createTaskForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const taskData = {
+            title: document.getElementById('title').value,
+            description: document.getElementById('description').value,
+            projectId: parseInt(document.getElementById('projectId').value)
+        };
+
+        const response = await fetch('https://teamtaskmanager-6vtq.onrender.com/api/Tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(taskData)
+        });
+
+        if (response.ok) {
+            window.location.href = '/Dashboard';
+        } else {
+            alert('Görev eklenirken bir hata oluştu.');
+        }
+    });
+</script>

@@ -30,6 +30,16 @@ public class ProjectRepository : IProjectRepository
         return project; //Eklenen projeyi geri döndür
     }
 
+    public async Task DeleteProjectAsync(int id)
+{
+    var project = await _context.Projects.FindAsync(id);
+    if (project != null)
+    {
+        _context.Projects.Remove(project);
+        await _context.SaveChangesAsync();
+    }
+}
+
 }
 
 //veritabanı kodları(entity framework) sadece bu dosyanın içinde

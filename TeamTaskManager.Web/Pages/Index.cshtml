@@ -45,15 +45,24 @@
 
             if (response.ok) {
                 const data = await response.json();
-                // TOKEN'I KAYDET (Kritik nokta)
-                localStorage.setItem('token', data.token);
-                alert('Giriş başarılı! Yönlendiriliyorsunuz...');
-                window.location.href = '/Dashboard';
+                console.log("API Yanıtı:", data);
+
+                // API veriyi "message" içinde gönderdiği için oradan alıyoruz
+                const tokenValue = data.message; 
+
+                if (tokenValue) {
+                    localStorage.setItem('token', tokenValue); 
+                    alert('Giriş başarılı! Yönlendiriliyorsunuz...');
+                    window.location.href = '/Dashboard';
+                } else {
+                    alert('Giriş başarılı ancak token alınamadı (message alanı boş).');
+                }
             } else {
                 alert('Giriş başarısız! Bilgilerinizi kontrol edin.');
             }
         } catch (error) {
             console.error('Hata:', error);
+            alert('Bağlantı hatası oluştu. Lütfen internetinizi veya sunucu adresini kontrol edin.');
         }
     });
 </script>

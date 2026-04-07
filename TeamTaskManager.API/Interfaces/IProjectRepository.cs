@@ -9,6 +9,8 @@ public interface IProjectRepository
 
     //Veritabanına yeni bir proje ekleme kuralı
     Task<Project> AddProjectAsync(Project project);
+
+    Task DeleteProjectAsync(int id);
 }
 
 //işçimizin(repository) hangi yeteneklere sahip olması gerektiğini

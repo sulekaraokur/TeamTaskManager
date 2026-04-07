@@ -1,0 +1,75 @@
+@page
+@{
+    ViewData["Title"] = "Yeni Proje Oluştur";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Yeni Proje Oluştur</h4>
+                </div>
+                <div class="card-body">
+                    <form id="createProjectForm">
+                        <div class="mb-3">
+                            <label class="form-label font-weight-bold">Proje Adı</label>
+                            <input type="text" id="projectName" class="form-control" placeholder="Örn: E-Ticaret Sitesi" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Açıklama</label>
+                            <textarea id="projectDescription" class="form-control" rows="3" placeholder="Proje hakkında kısa bilgi..."></textarea>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Projeyi Kaydet</button>
+                            <a href="/Dashboard" class="btn btn-light">İptal</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('createProjectForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert("Oturum süresi dolmuş, lütfen tekrar giriş yapın.");
+            window.location.href = '/';
+            return;
+        }
+
+        const projectData = {
+            name: document.getElementById('projectName').value,
+            description: document.getElementById('projectDescription').value,
+            createdAt: new Date().toISOString()
+        };
+
+        try {
+            const response = await fetch('https://teamtaskmanager-6vtq.onrender.com/api/Project', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(projectData)
+            });
+
+            if (response.ok) {
+                alert('Proje başarıyla oluşturuldu!');
+                window.location.href = '/Dashboard';
+            } else {
+                // Hatanın detayını konsola yazdır ki görebilelim
+                const errorText = await response.text();
+                console.error('Sunucu Yanıtı:', errorText);
+                alert('Hata: Sunucu veriyi kabul etmedi.');
+            }
+        } catch (error) {
+            console.error('İstek Hatası:', error);
+            alert('Sunucuya bağlanılamadı.');
+        }
+    });
+</script>
