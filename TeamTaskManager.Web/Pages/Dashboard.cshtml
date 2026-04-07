@@ -1,0 +1,141 @@
+@page
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="display-5">Hoş Geldin!</h1>
+            <p class="text-muted">Ekibinin projelerini ve görevlerini buradan takip edebilirsin.</p>
+        </div>
+        <div>
+            <button class="btn btn-primary" onclick="window.location.reload()">Verileri Yenile</button>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-uppercase">Toplam Proje</h6>
+                            <h2 id="projectCount" class="mb-0">...</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-folder-fill fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-uppercase">Tamamlanan Görevler</h6>
+                            <h2 id="completedTaskCount" class="mb-0">0</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-check-circle-fill fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-2 shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Aktif Projeler</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Proje Adı</th>
+                            <th>Açıklama</th>
+                            <th>Oluşturulma</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="projectTableBody">
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted">Projeler yükleniyor...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Güvenlik Kontrolü: Token yoksa direkt Login'e at
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/';
+    }
+
+    // 2. Sayfa Yüklendiğinde Verileri Getir
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDashboardData();
+    });
+
+    async function loadDashboardData() {
+        try {
+            // Render üzerindeki API'ne istek atıyoruz
+            const response = await fetch('https://teamtaskmanager-6vtq.onrender.com/api/Project', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const projects = await response.json();
+                
+                // Sayıları Güncelle
+                document.getElementById('projectCount').innerText = projects.length;
+                
+                // Tabloyu Doldur
+                const tableBody = document.getElementById('projectTableBody');
+                tableBody.innerHTML = ''; // "Yükleniyor" yazısını sil
+
+                if (projects.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4">Henüz bir proje oluşturulmamış.</td></tr>';
+                    return;
+                }
+
+                projects.forEach(p => {
+                    const date = new Date(p.createdAt).toLocaleDateString('tr-TR');
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td class="fw-bold">${p.name}</td>
+                            <td>${p.description || '-'}</td>
+                            <td>${date}</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-primary" onclick="alert('Görev detayları yakında eklenecek!')">
+                                    Detay
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } else if (response.status === 401) {
+                alert('Oturum süresi dolmuş. Lütfen tekrar giriş yapın.');
+                localStorage.removeItem('token');
+                window.location.href = '/';
+            }
+        } catch (error) {
+            console.error('Hata:', error);
+            document.getElementById('projectTableBody').innerHTML = 
+                '<tr><td colspan="4" class="text-center text-danger py-4">Veriler sunucudan çekilemedi!</td></tr>';
+        }
+    }
+</script>
