@@ -150,28 +150,21 @@ async function deleteProject(id) {
     const currentToken = localStorage.getItem('token');
 
     try {
-        // ÜÇÜNCÜ VE SON İHTİMAL: ID'yi Body içinde gönderiyoruz
-        const res = await fetch(`https://teamtaskmanager-6vtq.onrender.com/api/Project`, {
+        const res = await fetch(`https://teamtaskmanager-6vtq.onrender.com/api/Project/${id}`, {
             method: 'DELETE',
             headers: { 
-                'Authorization': `Bearer ${currentToken}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(id) // ID'yi direkt sayı olarak pakete koyduk
+                'Authorization': `Bearer ${currentToken}`
+            }
         });
 
         if (res.ok) {
             alert('Proje başarıyla silindi.');
             loadDashboardData();
         } else {
-            // Eğer hala hata veriyorsa detayı görelim
-            const errorMsg = await res.text();
-            console.error("Silme Hatası Detayı:", errorMsg);
-            alert('Silme işlemi başarısız oldu. Konsoldaki hataya bakabilirsin.');
+            alert('Silme başarısız.');
         }
     } catch (err) {
-        console.error('Bağlantı Hatası:', err);
-        alert('Sunucuya bağlanılamadı.');
+        console.error(err);
     }
 }
 </script>

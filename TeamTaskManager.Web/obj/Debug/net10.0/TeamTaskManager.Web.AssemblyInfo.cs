@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TeamTaskManager.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ed4eeff4cc65bba3f489693c5f6c56ec3f98e1d8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+287fac068fd7a1cb856fd540c46fbbae5919dc0d")]
 [assembly: System.Reflection.AssemblyProductAttribute("TeamTaskManager.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TeamTaskManager.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
