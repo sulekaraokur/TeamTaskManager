@@ -17,9 +17,7 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<IEnumerable<Project>> GetAllProjectsAsync()
     {
-        //Buzdolabına(veritabanına) git,
-        //Projects rafındaki her şeyi liste olarak getir
-        return await _context.Projects.ToListAsync();
+        return await _context.Projects.Include(p => p.Tasks).ToListAsync();
     }
 
     public async Task<Project> AddProjectAsync(Project project)
